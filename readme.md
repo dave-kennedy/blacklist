@@ -1,6 +1,6 @@
 Use dnsmasq and a PAC file to block unwanted web content, courtesy of [SecureMecca.com](http://securemecca.com).
 
-##Part 1: Do this on the firewall/DNS server
+##Part 1: Configure firewall/DNS server
 
 ###Step 1: Add firewall rules
 
@@ -28,7 +28,7 @@ grep -q "$DNS1" /etc/dnsmasq.conf || echo "$DNS1" >> /etc/dnsmasq.conf
 
 ```bash
 ./get-hosts.sh
-mv hosts.txt /etc/blacklist.hosts
+mv blacklist.hosts /etc/blacklist.hosts
 ```
 
 Or do this step on another machine and upload the file:
@@ -43,22 +43,16 @@ scp hosts.txt root@192.168.1.1:/etc/blacklist.hosts
 /etc/init.d/firewall restart; /etc/init.d/dnsmasq restart
 ```
 
-##Part 2: Do this on each host in the network
-
-###Step 1: Download PAC file
+###Step 5: Download PAC file
 
 ```bash
 ./get-pac.sh
-mv pac.txt /etc/blacklist.pac
+mv blacklist.pac /www/blacklist.pac
 ```
 
-On a Windows system, this file can go in `C:\Windows\system32\drivers\etc\`.
+##Part 2: Configure each host in the network
 
-###Step 2: Configure each browser to use the PAC file
-
-This is the least fun step, and varies for each browser/OS.
-
-To set up a system-wide PAC file in Ubuntu, go to System Settings > Network > Network proxy. Change the method to automatic, and enter `file:///etc/blacklist.pac` for the configuration URL. This at least works for Chromium and Firefox.
+To set up a system-wide PAC file in Ubuntu, go to System Settings > Network > Network proxy. Change the method to automatic, and enter `http://192.168.1.1/blacklist.pac` for the configuration URL. This at least works for Chromium and Firefox.
 
 See [here](http://www.ericphelps.com/security/pac.htm) for information on setting up a system-wide PAC file in Windows.
 
