@@ -6,6 +6,8 @@ REMOTE_DATE="http://securemecca.com/Downloads/hdate.txt"
 LAST_RUN="$LOGS_DIR/hdate.txt"
 LOCAL_HOSTS="hosts.txt"
 REMOTE_HOSTS="http://securemecca.com/Downloads/hosts.txt"
+BLACKLIST="blacklist.hosts"
+ADD_HOSTS="add-hosts.txt"
 
 if [ ! -d "$LOGS_DIR" ]; then
     mkdir "$LOGS_DIR"
@@ -35,7 +37,8 @@ fi
 
 echo "Done"
 
-sed -i "s/$//" "$LOCAL_HOSTS"
+sed 's/$//' "$LOCAL_HOSTS" > "$BLACKLIST"
+cat "$ADD_HOSTS" >> "$BLACKLIST"
 
 mv "$LOCAL_DATE" "$LAST_RUN"
 

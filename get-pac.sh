@@ -6,6 +6,8 @@ REMOTE_DATE="http://securemecca.com/Downloads/pdate.txt"
 LAST_RUN="$LOGS_DIR/pdate.txt"
 LOCAL_PAC="pac.txt"
 REMOTE_PAC="http://securemecca.com/Downloads/pornproxy_en.txt"
+BLACKLIST="blacklist.pac"
+ADD_PAC="add-pac.txt"
 
 if [ ! -d "$LOGS_DIR" ]; then
     mkdir "$LOGS_DIR"
@@ -35,7 +37,14 @@ fi
 
 echo "Done"
 
-sed -i "s/$//" "$LOCAL_PAC"
+sed 's/$//' "$LOCAL_PAC" |
+tac |
+awk '
+    NR == FNR {additional[$1] = $0; next}
+    $1 in additional && !found[$1] {print additional[$1]; found[$1] = 1}
+    {print}
+' "$ADD_PAC" - |
+tac > "$BLACKLIST"
 
 mv "$LOCAL_DATE" "$LAST_RUN"
 
