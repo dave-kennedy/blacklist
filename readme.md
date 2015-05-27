@@ -1,3 +1,5 @@
+A three part solution for network security that's good enough for me.
+
 ##Part 1: Blacklist
 
 Do each of these steps on your firewall/DNS server.
@@ -64,9 +66,13 @@ See [here](http://www.ericphelps.com/security/pac.htm) for information on settin
 
 [OpenDNS](https://www.opendns.com/)
 
+You can configure OpenDNS to block everything from alcohol to email, weapons and even religion. I prefer to leave it purely as a safety net, blocking only malware and porn, in case something slips through the blacklist and the proxy.
+
 ###Step 2: Register on DNS-O-Matic
 
 [DNS-O-Matic](https://www.dnsomatic.com/)
+
+Add OpenDNS as a service to DNS-O-Matic.
 
 ###Step 3: Add startup script
 
@@ -105,7 +111,32 @@ grep -q "$DNS4" /etc/dnsmasq.conf || echo "$DNS4" >> /etc/dnsmasq.conf
 /etc/init.d/dnsmasq restart
 ```
 
+##Customization
+
+Since the blacklist is downloaded from [SecureMecca.com](http://securemecca.com/), any changes made to it will be lost when the script is run again. Additional domains can be added to a file named `add-hosts.txt`. This file should live in the same directory as the script and should be formatted as a hosts file:
+
+```text
+127.0.0.1    4chan.org
+```
+
+Likewise, additional proxy rules can be added to a file named `add-pac.txt`. It should look like this:
+
+```text
+BadURL_Parts[i++] = "foobar"
+BadHostParts[i++] = "[^e]adult";
+```
+
+See [here](http://securemecca.com/Downloads/proxy_en.txt) for the complete list and description of each section.
+
 ##Disclaimer
 
-This is not a 100% effective solution for securing your network from adware, spyware, trojans, virses, smut, etc. But it will help.
+This is not a 100% effective solution for securing your network from ads, malware, porn, trackers, etc. If you want that, you really need a [whitelist](https://github.com/Pajamaman/dnsmasq).
 
+##To-do
+
+* get-hosts.sh
+  * Upload to DNS server
+  * Skip download and build blacklist.hosts
+* get-pac.sh
+  * Upload to web server/network share
+  * Skip download and build filter.pac
