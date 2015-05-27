@@ -1,16 +1,15 @@
 #/bin/bash
 
-LOGS_DIR="logs"
+CACHE_DIR="cache"
 LOCAL_DATE="pdate.txt"
 REMOTE_DATE="http://securemecca.com/Downloads/pdate.txt"
-LAST_RUN="$LOGS_DIR/pdate.txt"
 LOCAL_PAC="pac.txt"
 REMOTE_PAC="http://securemecca.com/Downloads/pornproxy_en.txt"
 BLACKLIST="blacklist.pac"
 ADD_PAC="add-pac.txt"
 
-if [ ! -d "$LOGS_DIR" ]; then
-    mkdir "$LOGS_DIR"
+if [ ! -d "$CACHE_DIR" ]; then
+    mkdir "$CACHE_DIR"
 fi
 
 if ! wget -qO "$LOCAL_DATE" "$REMOTE_DATE"; then
@@ -18,10 +17,10 @@ if ! wget -qO "$LOCAL_DATE" "$REMOTE_DATE"; then
     exit 1
 fi
 
-if [ -f "$LAST_RUN" ]; then
-    if diff -q "$LOCAL_DATE" "$LAST_RUN" > /dev/null; then
+if [ -f "$CACHE_DIR/$LOCAL_DATE" ]; then
+    if diff -q "$LOCAL_DATE" "$CACHE_DIR/$LOCAL_DATE" > /dev/null; then
         echo "PAC file is up to date"
-        mv "$LOCAL_DATE" "$LAST_RUN"
+        mv "$LOCAL_DATE" "$CACHE_DIR"
         exit 0
     else
         echo "PAC file is out of date - downloading..."
@@ -46,5 +45,5 @@ awk '
 ' "$ADD_PAC" - |
 tac > "$BLACKLIST"
 
-mv "$LOCAL_DATE" "$LAST_RUN"
+mv "$LOCAL_DATE" "$LOCAL_PAC" "$CACHE_DIR"
 
