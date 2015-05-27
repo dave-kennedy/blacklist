@@ -3,4 +3,5 @@ add-hosts.txt
 add-pac.txt
 blacklist.hosts
 filter.pac
+log.txt
 

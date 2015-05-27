@@ -136,7 +136,5 @@ This is not a 100% effective solution for securing your network from ads, malwar
 
 * get-hosts.sh
   * Upload to DNS server
-  * Skip download and build blacklist.hosts
 * get-pac.sh
   * Upload to web server/network share
-  * Skip download and build filter.pac

@@ -1,5 +1,6 @@
 #/bin/bash
 
+LOG="log.txt"
 CACHE_DIR="cache"
 LOCAL_DATE="hdate.txt"
 REMOTE_DATE="http://securemecca.com/Downloads/hdate.txt"
@@ -10,36 +11,51 @@ ADD_HOSTS="add-hosts.txt"
 
 cd "${BASH_SOURCE%/*}" || exit
 
+echo "Log started $(date)" >> "$LOG"
+
 if [ ! -d "$CACHE_DIR" ]; then
     mkdir "$CACHE_DIR"
 fi
 
+echo "Downloading $REMOTE_DATE..." | tee -a "$LOG"
+
 if ! wget -qO "$LOCAL_DATE" "$REMOTE_DATE"; then
-    echo "Couldn't download $REMOTE_DATE"
+    echo "Error: $?" | tee -a "$LOG"
     exit 1
 fi
 
+echo "Done" | tee -a "$LOG"
+
 if [ -f "$CACHE_DIR/$LOCAL_DATE" ]; then
     if diff -q "$LOCAL_DATE" "$CACHE_DIR/$LOCAL_DATE" > /dev/null; then
-        echo "Hosts file is up to date"
-        mv "$LOCAL_DATE" "$CACHE_DIR"
-        exit 0
+        echo "Hosts file is up to date" | tee -a "$LOG"
+        download=false
     else
-        echo "Hosts file is out of date - downloading..."
+        echo "Hosts file is out of date" | tee -a "$LOG"
+        download=true
     fi
 else
-    echo "First run - downloading hosts file..."
+    echo "First run" | tee -a "$LOG"
+    download=true
 fi
 
-if ! wget -qO "$LOCAL_HOSTS" "$REMOTE_HOSTS"; then
-    echo "Couldn't download $REMOTE_HOSTS"
-    exit 2
-fi
+mv "$LOCAL_DATE" "$CACHE_DIR"
 
-echo "Done"
+if [ "$download" = true ]; then
+    echo "Downloading $REMOTE_HOSTS..." | tee -a "$LOG"
+
+    if ! wget -qO "$LOCAL_HOSTS" "$REMOTE_HOSTS"; then
+        echo "Error: $?" | tee -a "$LOG"
+        exit 2
+    fi
+
+    echo "Done" | tee -a "$LOG"
+fi
 
 sed 's/$//' "$LOCAL_HOSTS" > "$BLACKLIST"
 cat "$ADD_HOSTS" >> "$BLACKLIST"
 
-mv "$LOCAL_DATE" "$LOCAL_HOSTS" "$CACHE_DIR"
+mv "$LOCAL_HOSTS" "$CACHE_DIR"
+
+echo "" >> "$LOG"
 
