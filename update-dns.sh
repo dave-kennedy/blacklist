@@ -2,7 +2,7 @@
 
 CACHE_DIR="cache"
 LOCAL_IP="ip.txt"
-REMOTE_IP="http://192.168.1.1/cgi-bin/ip"
+REMOTE_IP="http://myip.dnsomatic.com/"
 USER="user"
 PASSWORD="password"
 DNS_SERVICE="https://updates.dnsomatic.com/nic/update?hostname=all.dnsomatic.com&myip="
