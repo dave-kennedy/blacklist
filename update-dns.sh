@@ -7,6 +7,8 @@ USER="user"
 PASSWORD="password"
 DNS_SERVICE="https://updates.dnsomatic.com/nic/update?hostname=all.dnsomatic.com&myip="
 
+cd "${BASH_SOURCE%/*}" || exit
+
 if [ ! -d "$CACHE_DIR" ]; then
     mkdir "$CACHE_DIR"
 fi

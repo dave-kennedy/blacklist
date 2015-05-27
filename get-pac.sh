@@ -8,6 +8,8 @@ REMOTE_PAC="http://securemecca.com/Downloads/pornproxy_en.txt"
 FILTER="filter"
 ADD_PAC="add-pac.txt"
 
+cd "${BASH_SOURCE%/*}" || exit
+
 if [ ! -d "$CACHE_DIR" ]; then
     mkdir "$CACHE_DIR"
 fi

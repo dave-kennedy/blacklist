@@ -8,6 +8,8 @@ REMOTE_HOSTS="http://securemecca.com/Downloads/hosts.txt"
 BLACKLIST="blacklist.hosts"
 ADD_HOSTS="add-hosts.txt"
 
+cd "${BASH_SOURCE%/*}" || exit
+
 if [ ! -d "$CACHE_DIR" ]; then
     mkdir "$CACHE_DIR"
 fi
