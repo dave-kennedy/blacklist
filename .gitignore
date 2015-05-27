@@ -2,5 +2,5 @@ cache/
 add-hosts.txt
 add-pac.txt
 blacklist.hosts
-blacklist.pac
+filter.pac
 

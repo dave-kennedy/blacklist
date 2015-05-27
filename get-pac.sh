@@ -5,7 +5,7 @@ LOCAL_DATE="pdate.txt"
 REMOTE_DATE="http://securemecca.com/Downloads/pdate.txt"
 LOCAL_PAC="pac.txt"
 REMOTE_PAC="http://securemecca.com/Downloads/pornproxy_en.txt"
-BLACKLIST="blacklist.pac"
+FILTER="filter"
 ADD_PAC="add-pac.txt"
 
 if [ ! -d "$CACHE_DIR" ]; then
@@ -43,7 +43,7 @@ awk '
     $1 in additional && !found[$1] {print additional[$1]; found[$1] = 1}
     {print}
 ' "$ADD_PAC" - |
-tac > "$BLACKLIST"
+tac > "$FILTER"
 
 mv "$LOCAL_DATE" "$LOCAL_PAC" "$CACHE_DIR"
 

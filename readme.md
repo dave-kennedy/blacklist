@@ -34,7 +34,7 @@ mv blacklist.hosts /etc/blacklist.hosts
 Or do this step on another machine and upload the file:
 
 ```bash
-scp hosts.txt root@192.168.1.1:/etc/blacklist.hosts
+scp blacklist.hosts root@192.168.1.1:/etc/blacklist.hosts
 ```
 
 ###Step 4: Restart firewall and dnsmasq
@@ -47,12 +47,20 @@ scp hosts.txt root@192.168.1.1:/etc/blacklist.hosts
 
 ```bash
 ./get-pac.sh
-mv blacklist.pac /www/blacklist.pac
+mv filter.pac /www/filter.pac
 ```
+
+Or do this step on another machine and upload the file:
+
+```bash
+scp filter.pac root@192.168.1.1:/etc/filter.pac
+```
+
+This is assuming the firewall/DNS server is also a web server. If not, this file can live on a network share or on the clients.
 
 ##Part 2: Configure each host in the network
 
-To set up a system-wide PAC file in Ubuntu, go to System Settings > Network > Network proxy. Change the method to automatic, and enter `http://192.168.1.1/blacklist.pac` for the configuration URL. This at least works for Chromium and Firefox.
+To set up a system-wide PAC file in Ubuntu, go to System Settings > Network > Network proxy. Change the method to automatic, and enter `http://192.168.1.1/filter.pac` for the configuration URL. This at least works for Chromium and Firefox.
 
 See [here](http://www.ericphelps.com/security/pac.htm) for information on setting up a system-wide PAC file in Windows.
 
