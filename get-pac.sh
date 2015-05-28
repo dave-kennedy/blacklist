@@ -52,14 +52,13 @@ fi
 
 echo "Building $FILTER..." | tee -a "$LOG"
 
-sed 's/$//' "$CACHE_DIR/$LOCAL_PAC" |
-tac |
-awk '
-    NR == FNR {additional[$1] = $0; next}
-    $1 in additional && !found[$1] {print additional[$1]; found[$1] = 1}
-    {print}
-' "$ADD_PAC" - |
-tac > "$FILTER"
+sed 's/$//' "$CACHE_DIR/$LOCAL_PAC" > "$FILTER"
+
+while read line; do
+    list=$(expr match "$line" '\(.*\[\)')
+    list=${list::-1}
+    sed -i "/$list\[i++\]/{:loop; n; /^$/{s/^$/$line\n/; b}; b loop;}" "$FILTER"
+done < "$ADD_PAC"
 
 echo "Done" | tee -a "$LOG"
 
