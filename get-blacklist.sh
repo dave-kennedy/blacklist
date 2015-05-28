@@ -7,7 +7,7 @@ REMOTE_DATE="http://securemecca.com/Downloads/hdate.txt"
 LOCAL_HOSTS="hosts.txt"
 REMOTE_HOSTS="http://securemecca.com/Downloads/hosts.txt"
 BLACKLIST="blacklist.hosts"
-ADD_HOSTS="add-hosts.txt"
+ADD_BLACKLIST="add-blacklist.txt"
 
 cd "${BASH_SOURCE%/*}" || exit
 
@@ -53,7 +53,7 @@ fi
 echo "Building $BLACKLIST..." | tee -a "$LOG"
 
 sed 's/$//' "$CACHE_DIR/$LOCAL_HOSTS" > "$BLACKLIST"
-cat "$ADD_HOSTS" >> "$BLACKLIST"
+cat "$ADD_BLACKLIST" >> "$BLACKLIST"
 
 echo "Done" | tee -a "$LOG"
 

@@ -7,7 +7,7 @@ REMOTE_DATE="http://securemecca.com/Downloads/pdate.txt"
 LOCAL_PAC="pac.txt"
 REMOTE_PAC="http://securemecca.com/Downloads/pornproxy_en.txt"
 FILTER="filter.pac"
-ADD_PAC="add-pac.txt"
+ADD_FILTER="add-filter.txt"
 
 cd "${BASH_SOURCE%/*}" || exit
 
@@ -58,7 +58,7 @@ while read line; do
     list=$(expr match "$line" '\(.*\[\)')
     list=${list::-1}
     sed -i "/$list\[i++\]/{:loop; n; /^$/{s/^$/$line\n/; b}; b loop;}" "$FILTER"
-done < "$ADD_PAC"
+done < "$ADD_FILTER"
 
 echo "Done" | tee -a "$LOG"
 

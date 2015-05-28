@@ -29,7 +29,7 @@ grep -q "$DNS1" /etc/dnsmasq.conf || echo "$DNS1" >> /etc/dnsmasq.conf
 ###Step 3: Download blacklist
 
 ```bash
-./get-hosts.sh
+./get-blacklist.sh
 mv blacklist.hosts /etc/blacklist.hosts
 ```
 
@@ -46,7 +46,7 @@ mv blacklist.hosts /etc/blacklist.hosts
 If you have a web server, download this file to the web root or something.
 
 ```bash
-./get-pac.sh
+./get-filter.sh
 mv filter.pac /www/filter.pac
 ```
 
@@ -64,15 +64,11 @@ See [here](http://www.ericphelps.com/security/pac.htm) for information on settin
 
 ###Step 1: Register on OpenDNS
 
-[OpenDNS](https://www.opendns.com/)
-
-You can configure OpenDNS to block everything from alcohol to email, weapons and even religion. I prefer to leave it purely as a safety net, blocking only malware and porn, in case something slips through the blacklist and the proxy.
+You can configure [OpenDNS](https://www.opendns.com/) to block everything from alcohol to email, weapons and even religion. I prefer to leave it purely as a safety net, blocking only malware and porn, in case something slips through the blacklist and the proxy.
 
 ###Step 2: Register on DNS-O-Matic
 
-[DNS-O-Matic](https://www.dnsomatic.com/)
-
-Add OpenDNS as a service to DNS-O-Matic.
+[DNS-O-Matic](https://www.dnsomatic.com/) provides an API to notify OpenDNS your public IP address changes, which it needs to apply your filtering preferences. Add OpenDNS as a service to DNS-O-Matic.
 
 ###Step 3: Add startup script
 
@@ -113,13 +109,13 @@ grep -q "$DNS4" /etc/dnsmasq.conf || echo "$DNS4" >> /etc/dnsmasq.conf
 
 ##Customization
 
-Since the blacklist is downloaded from [SecureMecca.com](http://securemecca.com/), any changes made to it will be lost when the script is run again. Additional domains can be added to a file named `add-hosts.txt`. This file should live in the same directory as the script and should be formatted as a hosts file:
+Since the blacklist is downloaded from [SecureMecca.com](http://securemecca.com/), any changes made to it will be lost when the script is run again. Additional domains can be added to a file named `add-blacklist.txt`. This file should live in the same directory as the script and should be formatted as a hosts file:
 
 ```text
 127.0.0.1    4chan.org
 ```
 
-Likewise, additional proxy rules can be added to a file named `add-pac.txt`. It should look like this:
+Likewise, additional filtering rules can be added to a file named `add-filter.txt`. It should look like this:
 
 ```text
 BadURL_Parts[i++] = "foobar"
@@ -138,3 +134,4 @@ This is not a 100% effective solution for securing your network from ads, malwar
   * Upload to DNS server
 * get-pac.sh
   * Upload to web server/network share
+
