@@ -2,6 +2,7 @@ cache/
 add-blacklist.txt
 add-filter.txt
 blacklist.hosts
+config.txt
 filter.pac
 log.txt
 

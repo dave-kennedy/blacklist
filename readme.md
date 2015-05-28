@@ -82,7 +82,34 @@ RC1="/path/to/update-dns.sh &"
 grep -q "$RC1" /etc/rc.local || echo "$RC1" >> /etc/rc.local
 ```
 
-###Step 4: Add OpenDNS to dnsmasq config
+Or set up a cron job:
+
+```bash
+cp /etc/crontab /etc/crontab.orig
+
+CRON1="0 4 * * 0,3 root /path/to/update-dns.sh"
+
+grep -q "$CRON1" /etc/crontab || echo "$CRON1" >> /etc/crontab
+```
+
+###Step 4: Create config file
+
+This file should live in the same directory as the script and must contain at least the username and password for DNS-O-Matic:
+
+```text
+ddns_user=username
+ddns_pass=password
+```
+
+You can also specify the URL to get your public IP address from:
+
+```text
+remote_ip=http://192.168.1.1/get-public-ip
+```
+
+This value will default to http://myip.dnsomatic.com.
+
+###Step 5: Add OpenDNS to dnsmasq config
 
 Do this step on your DNS server.
 
@@ -101,7 +128,7 @@ grep -q "$DNS3" /etc/dnsmasq.conf || echo "$DNS3" >> /etc/dnsmasq.conf
 grep -q "$DNS4" /etc/dnsmasq.conf || echo "$DNS4" >> /etc/dnsmasq.conf
 ```
 
-###Step 5: Restart dnsmasq
+###Step 6: Restart dnsmasq
 
 ```bash
 /etc/init.d/dnsmasq restart
@@ -127,6 +154,10 @@ See [here](http://securemecca.com/Downloads/proxy_en.txt) for the complete list 
 ##Disclaimer
 
 This is not a 100% effective solution for securing your network from ads, malware, porn, trackers, etc. If you want that, you really need a [whitelist](https://github.com/Pajamaman/dnsmasq).
+
+##Credit
+
+Much love goes to the OpenWRT community, particularly those who contributed to [this thread](https://forum.openwrt.org/viewtopic.php?id=35023), to the folks at [Unix & Linux SE](https://unix.stackexchange.com/), and to the [SecureMecca.com](http://securemecca.com/) team.
 
 ##To-do
 
