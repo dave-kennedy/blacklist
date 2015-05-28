@@ -1,6 +1,7 @@
 #/bin/bash
 
 log="log.txt"
+config="config.txt"
 cache_dir="cache"
 local_date="hdate.txt"
 remote_date="http://securemecca.com/Downloads/hdate.txt"
@@ -12,6 +13,16 @@ add_blacklist="add-blacklist.txt"
 cd "${BASH_SOURCE%/*}" || exit
 
 echo -e "\nLog started $(date)" >> "$log"
+
+if [ -f "$config" ]; then
+    while IFS='= ' read key value; do
+        case "$key" in
+            blacklist_dest)
+                declare "$key"="$value"
+                ;;
+        esac
+    done < "$config"
+fi
 
 if [ ! -d "$cache_dir" ]; then
     mkdir "$cache_dir"
@@ -56,4 +67,8 @@ sed 's/$//' "$cache_dir/$local_hosts" > "$blacklist"
 cat "$add_blacklist" >> "$blacklist"
 
 echo "Done" | tee -a "$log"
+
+if [ -n "$blacklist_dest" ]; then
+    scp "$blacklist" "$blacklist_dest"
+fi
 

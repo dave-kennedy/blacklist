@@ -33,6 +33,18 @@ grep -q "$DNS1" /etc/dnsmasq.conf || echo "$DNS1" >> /etc/dnsmasq.conf
 mv blacklist.hosts /etc/blacklist.hosts
 ```
 
+Or do this on a separate host and upload the file to the server:
+
+```bash
+scp blacklist.hosts root@192.168.1.1:/etc/blacklist.hosts
+```
+
+This step can be automated by placing the following in a file named `config.txt` in the same directory as the script:
+
+```text
+blacklist_dest=root@192.168.1.1:/etc/blacklist.hosts
+```
+
 ###Step 4: Restart firewall and dnsmasq
 
 ```bash
@@ -50,7 +62,19 @@ If you have a web server, download this file to the web root or something.
 mv filter.pac /www/filter.pac
 ```
 
-If you don't have a web server, you can download it to a file share or to each host in the network. My firewall/DNS server is also a web server, so I put it there.
+Or do this on a separate host and upload the file to the server:
+
+```bash
+scp filter.pac root@192.168.1.1:/www/filter.pac
+```
+
+This step can be automated by placing the following in a file named `config.txt` in the same directory as the script:
+
+```text
+filter_dest=root@192.168.1.1:/www/filter.pac
+```
+
+If you don't have a web server, you can move this file to a file share or copy it to each host in the network. My firewall/DNS server is also a web server, so I put it there.
 
 ###Step 2: Configure clients
 
@@ -94,7 +118,7 @@ grep -q "$CRON1" /etc/crontab || echo "$CRON1" >> /etc/crontab
 
 ###Step 4: Create config file
 
-This file should live in the same directory as the script and must contain at least the username and password for DNS-O-Matic:
+If you haven't done so already, create a file named `config.txt` in the same directory as the script. This file must contain at least your username and password for DNS-O-Matic:
 
 ```text
 ddns_user=username
@@ -161,8 +185,5 @@ Much love goes to the OpenWRT community, particularly those who contributed to [
 
 ##To-do
 
-* get-hosts.sh
-  * Upload to DNS server
-* get-pac.sh
-  * Upload to web server/network share
+* Automate restart dnsmasq after uploading blacklist
 

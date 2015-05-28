@@ -1,6 +1,7 @@
 #/bin/bash
 
 log="log.txt"
+config="config.txt"
 cache_dir="cache"
 local_date="pdate.txt"
 remote_date="http://securemecca.com/Downloads/pdate.txt"
@@ -12,6 +13,16 @@ add_filter="add-filter.txt"
 cd "${BASH_SOURCE%/*}" || exit
 
 echo -e "\nLog started $(date)" >> "$log"
+
+if [ -f "$config" ]; then
+    while IFS='= ' read key value; do
+        case "$key" in
+            filter_dest)
+                declare "$key"="$value"
+                ;;
+        esac
+    done < "$config"
+fi
 
 if [ ! -d "$cache_dir" ]; then
     mkdir "$cache_dir"
@@ -61,4 +72,8 @@ while read line; do
 done < "$add_filter"
 
 echo "Done" | tee -a "$log"
+
+if [ -n "$filter_dest" ]; then
+    scp "$filter" "$filter_dest"
+fi
 
