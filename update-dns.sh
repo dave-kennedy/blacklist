@@ -1,53 +1,53 @@
 #!/bin/bash
 
-LOG="log.txt"
-CACHE_DIR="cache"
-LOCAL_IP="ip.txt"
-REMOTE_IP="http://myip.dnsomatic.com/"
-USER="user"
-PASSWORD="password"
-DNS_SERVICE="https://updates.dnsomatic.com/nic/update?hostname=all.dnsomatic.com&myip="
+log="log.txt"
+cache_dir="cache"
+local_ip="ip.txt"
+remote_ip="http://myip.dnsomatic.com"
+user="user"
+password="password"
+dns_service="https://updates.dnsomatic.com/nic/update?hostname=all.dnsomatic.com&myip="
 
 cd "${BASH_SOURCE%/*}" || exit
 
-echo -e "\nLog started $(date)" >> "$LOG"
+echo -e "\nLog started $(date)" >> "$log"
 
-if [ ! -d "$CACHE_DIR" ]; then
-    mkdir "$CACHE_DIR"
+if [ ! -d "$cache_dir" ]; then
+    mkdir "$cache_dir"
 fi
 
-echo "Downloading $REMOTE_IP..." | tee -a "$LOG"
+echo "Downloading $remote_ip..." | tee -a "$log"
 
-if ! wget -qO "$LOCAL_IP" "$REMOTE_IP"; then
-    echo "Error: $?" | tee -a "$LOG"
+if ! wget -qO "$local_ip" "$remote_ip"; then
+    echo "Error: $?" | tee -a "$log"
     exit 1
 fi
 
-echo "Done" | tee -a "$LOG"
+echo "Done" | tee -a "$log"
 
-if [ ! -f "$CACHE_DIR/$LOCAL_IP" ]; then
-    echo "First run" | tee -a "$LOG"
+if [ ! -f "$cache_dir/$local_ip" ]; then
+    echo "First run" | tee -a "$log"
     update=true
-elif ! diff -q "$LOCAL_IP" "$CACHE_DIR/$LOCAL_IP" > /dev/null; then
-    echo "IP address is out of date" | tee -a "$LOG"
+elif ! diff -q "$local_ip" "$cache_dir/$local_ip" > /dev/null; then
+    echo "IP address is out of date" | tee -a "$log"
     update=true
 else
-    echo "IP address is up to date" | tee -a "$LOG"
+    echo "IP address is up to date" | tee -a "$log"
     update=false
 fi
 
-DNS_SERVICE+=$(cat "$LOCAL_IP")
+dns_service+=$(cat "$local_ip")
 
-mv "$LOCAL_IP" "$CACHE_DIR"
+mv "$local_ip" "$cache_dir"
 
 if [ "$update" = true ]; then
-    echo "Sending update to $DNS_SERVICE..." | tee -a "$LOG"
+    echo "Sending update to $dns_service..." | tee -a "$log"
 
-    if ! wget -qO - --user="$USER" --password="$PASSWORD" "$DNS_SERVICE" > /dev/null 2>&1; then
-        echo "Error: $?" | tee -a "$LOG"
+    if ! wget -qO - --user="$user" --password="$password" "$dns_service" > /dev/null 2>&1; then
+        echo "Error: $?" | tee -a "$log"
         exit 2
     fi
 
-    echo "Done" | tee -a "$LOG"
+    echo "Done" | tee -a "$log"
 fi
 

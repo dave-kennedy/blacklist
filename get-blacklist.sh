@@ -1,59 +1,59 @@
 #/bin/bash
 
-LOG="log.txt"
-CACHE_DIR="cache"
-LOCAL_DATE="hdate.txt"
-REMOTE_DATE="http://securemecca.com/Downloads/hdate.txt"
-LOCAL_HOSTS="hosts.txt"
-REMOTE_HOSTS="http://securemecca.com/Downloads/hosts.txt"
-BLACKLIST="blacklist.hosts"
-ADD_BLACKLIST="add-blacklist.txt"
+log="log.txt"
+cache_dir="cache"
+local_date="hdate.txt"
+remote_date="http://securemecca.com/Downloads/hdate.txt"
+local_hosts="hosts.txt"
+remote_hosts="http://securemecca.com/Downloads/hosts.txt"
+blacklist="blacklist.hosts"
+add_blacklist="add-blacklist.txt"
 
 cd "${BASH_SOURCE%/*}" || exit
 
-echo -e "\nLog started $(date)" >> "$LOG"
+echo -e "\nLog started $(date)" >> "$log"
 
-if [ ! -d "$CACHE_DIR" ]; then
-    mkdir "$CACHE_DIR"
+if [ ! -d "$cache_dir" ]; then
+    mkdir "$cache_dir"
 fi
 
-echo "Downloading $REMOTE_DATE..." | tee -a "$LOG"
+echo "Downloading $remote_date..." | tee -a "$log"
 
-if ! wget -qO "$LOCAL_DATE" "$REMOTE_DATE"; then
-    echo "Error: $?" | tee -a "$LOG"
+if ! wget -qO "$local_date" "$remote_date"; then
+    echo "Error: $?" | tee -a "$log"
     exit 1
 fi
 
-echo "Done" | tee -a "$LOG"
+echo "Done" | tee -a "$log"
 
-if [ ! -f "$CACHE_DIR/$LOCAL_HOSTS" ]; then
-    echo "First run" | tee -a "$LOG"
+if [ ! -f "$cache_dir/$local_hosts" ]; then
+    echo "First run" | tee -a "$log"
     download=true
-elif [ "$CACHE_DIR/$LOCAL_DATE" -ot "$LOCAL_DATE" ]; then
-    echo "Hosts file is out of date" | tee -a "$LOG"
+elif [ "$cache_dir/$local_date" -ot "$local_date" ]; then
+    echo "Hosts file is out of date" | tee -a "$log"
     download=true
 else
-    echo "Hosts file is up to date" | tee -a "$LOG"
+    echo "Hosts file is up to date" | tee -a "$log"
     download=false
 fi
 
-mv "$LOCAL_DATE" "$CACHE_DIR"
+mv "$local_date" "$cache_dir"
 
 if [ "$download" = true ]; then
-    echo "Downloading $REMOTE_HOSTS..." | tee -a "$LOG"
+    echo "Downloading $remote_hosts..." | tee -a "$log"
 
-    if ! wget -qO "$CACHE_DIR/$LOCAL_HOSTS" "$REMOTE_HOSTS"; then
-        echo "Error: $?" | tee -a "$LOG"
+    if ! wget -qO "$cache_dir/$local_hosts" "$remote_hosts"; then
+        echo "Error: $?" | tee -a "$log"
         exit 2
     fi
 
-    echo "Done" | tee -a "$LOG"
+    echo "Done" | tee -a "$log"
 fi
 
-echo "Building $BLACKLIST..." | tee -a "$LOG"
+echo "Building $blacklist..." | tee -a "$log"
 
-sed 's/$//' "$CACHE_DIR/$LOCAL_HOSTS" > "$BLACKLIST"
-cat "$ADD_BLACKLIST" >> "$BLACKLIST"
+sed 's/$//' "$cache_dir/$local_hosts" > "$blacklist"
+cat "$add_blacklist" >> "$blacklist"
 
-echo "Done" | tee -a "$LOG"
+echo "Done" | tee -a "$log"
 
