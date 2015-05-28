@@ -11,7 +11,7 @@ ADD_HOSTS="add-hosts.txt"
 
 cd "${BASH_SOURCE%/*}" || exit
 
-echo "Log started $(date)" >> "$LOG"
+echo -e "\nLog started $(date)" >> "$LOG"
 
 if [ ! -d "$CACHE_DIR" ]; then
     mkdir "$CACHE_DIR"
@@ -26,17 +26,15 @@ fi
 
 echo "Done" | tee -a "$LOG"
 
-if [ -f "$CACHE_DIR/$LOCAL_DATE" ]; then
-    if diff -q "$LOCAL_DATE" "$CACHE_DIR/$LOCAL_DATE" > /dev/null; then
-        echo "Hosts file is up to date" | tee -a "$LOG"
-        download=false
-    else
-        echo "Hosts file is out of date" | tee -a "$LOG"
-        download=true
-    fi
-else
+if [ ! -f "$CACHE_DIR/$LOCAL_HOSTS" ]; then
     echo "First run" | tee -a "$LOG"
     download=true
+elif [ "$CACHE_DIR/$LOCAL_DATE" -ot "$LOCAL_DATE" ]; then
+    echo "Hosts file is out of date" | tee -a "$LOG"
+    download=true
+else
+    echo "Hosts file is up to date" | tee -a "$LOG"
+    download=false
 fi
 
 mv "$LOCAL_DATE" "$CACHE_DIR"
@@ -44,7 +42,7 @@ mv "$LOCAL_DATE" "$CACHE_DIR"
 if [ "$download" = true ]; then
     echo "Downloading $REMOTE_HOSTS..." | tee -a "$LOG"
 
-    if ! wget -qO "$LOCAL_HOSTS" "$REMOTE_HOSTS"; then
+    if ! wget -qO "$CACHE_DIR/$LOCAL_HOSTS" "$REMOTE_HOSTS"; then
         echo "Error: $?" | tee -a "$LOG"
         exit 2
     fi
@@ -52,10 +50,10 @@ if [ "$download" = true ]; then
     echo "Done" | tee -a "$LOG"
 fi
 
-sed 's/$//' "$LOCAL_HOSTS" > "$BLACKLIST"
+echo "Building $BLACKLIST..." | tee -a "$LOG"
+
+sed 's/$//' "$CACHE_DIR/$LOCAL_HOSTS" > "$BLACKLIST"
 cat "$ADD_HOSTS" >> "$BLACKLIST"
 
-mv "$LOCAL_HOSTS" "$CACHE_DIR"
-
-echo "" >> "$LOG"
+echo "Done" | tee -a "$LOG"
 

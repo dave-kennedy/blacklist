@@ -6,12 +6,12 @@ LOCAL_DATE="pdate.txt"
 REMOTE_DATE="http://securemecca.com/Downloads/pdate.txt"
 LOCAL_PAC="pac.txt"
 REMOTE_PAC="http://securemecca.com/Downloads/pornproxy_en.txt"
-FILTER="filter"
+FILTER="filter.pac"
 ADD_PAC="add-pac.txt"
 
 cd "${BASH_SOURCE%/*}" || exit
 
-echo "Log started $(date)" >> "$LOG"
+echo -e "\nLog started $(date)" >> "$LOG"
 
 if [ ! -d "$CACHE_DIR" ]; then
     mkdir "$CACHE_DIR"
@@ -26,17 +26,15 @@ fi
 
 echo "Done" | tee -a "$LOG"
 
-if [ -f "$CACHE_DIR/$LOCAL_DATE" ]; then
-    if diff -q "$LOCAL_DATE" "$CACHE_DIR/$LOCAL_DATE" > /dev/null; then
-        echo "PAC file is up to date" | tee -a "$LOG"
-        download=false
-    else
-        echo "PAC file is out of date" | tee -a "$LOG"
-        download=true
-    fi
-else
+if [ ! -f "$CACHE_DIR/$LOCAL_PAC" ]; then
     echo "First run" | tee -a "$LOG"
     download=true
+elif [ "$CACHE_DIR/$LOCAL_DATE" -ot "$LOCAL_DATE" ]; then
+    echo "PAC file is out of date" | tee -a "$LOG"
+    download=true
+else
+    echo "PAC file is up to date" | tee -a "$LOG"
+    download=false
 fi
 
 mv "$LOCAL_DATE" "$CACHE_DIR"
@@ -44,7 +42,7 @@ mv "$LOCAL_DATE" "$CACHE_DIR"
 if [ "$download" = true ]; then
     echo "Downloading $REMOTE_PAC..." | tee -a "$LOG"
 
-    if ! wget -qO "$LOCAL_PAC" "$REMOTE_PAC"; then
+    if ! wget -qO "$CACHE_DIR/$LOCAL_PAC" "$REMOTE_PAC"; then
         echo "Error: $?" | tee -a "$LOG"
         exit 2
     fi
@@ -52,7 +50,9 @@ if [ "$download" = true ]; then
     echo "Done" | tee -a "$LOG"
 fi
 
-sed 's/$//' "$LOCAL_PAC" |
+echo "Building $FILTER..." | tee -a "$LOG"
+
+sed 's/$//' "$CACHE_DIR/$LOCAL_PAC" |
 tac |
 awk '
     NR == FNR {additional[$1] = $0; next}
@@ -61,7 +61,5 @@ awk '
 ' "$ADD_PAC" - |
 tac > "$FILTER"
 
-mv "$LOCAL_PAC" "$CACHE_DIR"
-
-echo "" >> "$LOG"
+echo "Done" | tee -a "$LOG"
 
