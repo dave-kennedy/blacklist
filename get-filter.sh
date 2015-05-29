@@ -74,6 +74,10 @@ done < "$add_filter"
 echo "Done" | tee -a "$log"
 
 if [ -n "$filter_dest" ]; then
-    scp "$filter" "$filter_dest"
+    echo "Uploading to $filter_dest..." | tee -a "$log"
+
+    scp -q "$filter" "$filter_dest"
+
+    echo "Done" | tee -a "$log"
 fi
 

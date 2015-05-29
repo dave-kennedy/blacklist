@@ -69,6 +69,15 @@ cat "$add_blacklist" >> "$blacklist"
 echo "Done" | tee -a "$log"
 
 if [ -n "$blacklist_dest" ]; then
-    scp "$blacklist" "$blacklist_dest"
+    if ! echo "$blacklist_dest" | grep -Eq ".+@.+:.+"; then
+        echo "Upload destination is not valid" | tee -a "$log"
+        exit 3
+    fi
+
+    echo "Uploading to $blacklist_dest..." | tee -a "$log"
+
+    cat "$blacklist" | ssh "${blacklist_dest%:*}" "cat > ${blacklist_dest#*:}; /etc/init.d/dnsmasq restart"
+
+    echo "Done" | tee -a "$log"
 fi
 

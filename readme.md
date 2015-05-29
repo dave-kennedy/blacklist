@@ -9,11 +9,11 @@ Do each of these steps on your firewall/DNS server.
 ```bash
 cp /etc/firewall.user /etc/firewall.user.orig
 
-FW1="iptables -t nat -I PREROUTING -p tcp --dport 53 -j REDIRECT --to-ports 53"
-FW2="iptables -t nat -I PREROUTING -p udp --dport 53 -j REDIRECT --to-ports 53"
+fw1="iptables -t nat -I PREROUTING -p tcp --dport 53 -j REDIRECT --to-ports 53"
+fw2="iptables -t nat -I PREROUTING -p udp --dport 53 -j REDIRECT --to-ports 53"
 
-grep -q "$FW1" /etc/firewall.user || echo "$FW1" >> /etc/firewall.user
-grep -q "$FW2" /etc/firewall.user || echo "$FW2" >> /etc/firewall.user
+grep -q "$fw1" /etc/firewall.user || echo "$fw1" >> /etc/firewall.user
+grep -q "$fw2" /etc/firewall.user || echo "$fw2" >> /etc/firewall.user
 ```
 
 ###Step 2: Add blacklist to dnsmasq config
@@ -21,28 +21,22 @@ grep -q "$FW2" /etc/firewall.user || echo "$FW2" >> /etc/firewall.user
 ```bash
 cp /etc/dnsmasq.conf /etc/dnsmasq.conf.orig
 
-DNS1="addn-hosts=/etc/blacklist.hosts"
+dns1="addn-hosts=/etc/blacklist.hosts"
 
-grep -q "$DNS1" /etc/dnsmasq.conf || echo "$DNS1" >> /etc/dnsmasq.conf
+grep -q "$dns1" /etc/dnsmasq.conf || echo "$dns1" >> /etc/dnsmasq.conf
 ```
 
 ###Step 3: Download blacklist
 
 ```bash
 ./get-blacklist.sh
-mv blacklist.hosts /etc/blacklist.hosts
+cp blacklist.hosts /etc/blacklist.hosts
 ```
 
-Or do this on a separate host and upload the file to the server:
+Or do this on a separate host and upload the file to the server.
 
 ```bash
 scp blacklist.hosts root@192.168.1.1:/etc/blacklist.hosts
-```
-
-This step can be automated by placing the following in a file named `config.txt` in the same directory as the script:
-
-```text
-blacklist_dest=root@192.168.1.1:/etc/blacklist.hosts
 ```
 
 ###Step 4: Restart firewall and dnsmasq
@@ -55,26 +49,20 @@ blacklist_dest=root@192.168.1.1:/etc/blacklist.hosts
 
 ###Step 1: Download filter
 
-If you have a web server, download this file to the web root or something.
+If you have a web server, copy this file to the web root or something.
 
 ```bash
 ./get-filter.sh
-mv filter.pac /www/filter.pac
+cp filter.pac /www/filter.pac
 ```
 
-Or do this on a separate host and upload the file to the server:
+Or do this on a separate host and upload the file to the server.
 
 ```bash
 scp filter.pac root@192.168.1.1:/www/filter.pac
 ```
 
-This step can be automated by placing the following in a file named `config.txt` in the same directory as the script:
-
-```text
-filter_dest=root@192.168.1.1:/www/filter.pac
-```
-
-If you don't have a web server, you can move this file to a file share or copy it to each host in the network. My firewall/DNS server is also a web server, so I put it there.
+If you don't have a web server, you can copy this file to a file share or to each host in the network. My firewall/DNS server is also a web server, so I put it there.
 
 ###Step 2: Configure clients
 
@@ -101,37 +89,29 @@ This can go anywhere, but preferably on a host that is rebooted regularly.
 ```bash
 cp /etc/rc.local /etc/rc.local.orig
 
-RC1="/path/to/update-dns.sh &"
+rc1="/path/to/update-dns.sh &"
 
-grep -q "$RC1" /etc/rc.local || echo "$RC1" >> /etc/rc.local
+grep -q "$rc1" /etc/rc.local || echo "$rc1" >> /etc/rc.local
 ```
 
-Or set up a cron job:
+Or set up a cron job.
 
 ```bash
 cp /etc/crontab /etc/crontab.orig
 
-CRON1="0 4 * * 0,3 root /path/to/update-dns.sh"
+cron1="0 * * * * root /path/to/update-dns.sh"
 
-grep -q "$CRON1" /etc/crontab || echo "$CRON1" >> /etc/crontab
+grep -q "$cron1" /etc/crontab || echo "$cron1" >> /etc/crontab
 ```
 
 ###Step 4: Create config file
 
-If you haven't done so already, create a file named `config.txt` in the same directory as the script. This file must contain at least your username and password for DNS-O-Matic:
+Create a file named `config.txt` in the same directory as the script. This file must contain your username and password for DNS-O-Matic and must be formatted as follows:
 
 ```text
 ddns_user=username
 ddns_pass=password
 ```
-
-You can also specify the URL to get your public IP address from:
-
-```text
-remote_ip=http://192.168.1.1/get-public-ip
-```
-
-This value will default to http://myip.dnsomatic.com.
 
 ###Step 5: Add OpenDNS to dnsmasq config
 
@@ -141,15 +121,15 @@ Do this step on your DNS server.
 #we already made a backup
 #cp /etc/dnsmasq.conf /etc/dnsmasq.conf.orig
 
-DNS1="all-servers"
-DNS2="no-resolv"
-DNS3="server=208.67.222.222"
-DNS4="server=208.67.220.220"
+dns1="all-servers"
+dns2="no-resolv"
+dns3="server=208.67.222.222"
+dns4="server=208.67.220.220"
 
-grep -q "$DNS1" /etc/dnsmasq.conf || echo "$DNS1" >> /etc/dnsmasq.conf
-grep -q "$DNS2" /etc/dnsmasq.conf || echo "$DNS2" >> /etc/dnsmasq.conf
-grep -q "$DNS3" /etc/dnsmasq.conf || echo "$DNS3" >> /etc/dnsmasq.conf
-grep -q "$DNS4" /etc/dnsmasq.conf || echo "$DNS4" >> /etc/dnsmasq.conf
+grep -q "$dns1" /etc/dnsmasq.conf || echo "$dns1" >> /etc/dnsmasq.conf
+grep -q "$dns2" /etc/dnsmasq.conf || echo "$dns2" >> /etc/dnsmasq.conf
+grep -q "$dns3" /etc/dnsmasq.conf || echo "$dns3" >> /etc/dnsmasq.conf
+grep -q "$dns4" /etc/dnsmasq.conf || echo "$dns4" >> /etc/dnsmasq.conf
 ```
 
 ###Step 6: Restart dnsmasq
@@ -158,9 +138,27 @@ grep -q "$DNS4" /etc/dnsmasq.conf || echo "$DNS4" >> /etc/dnsmasq.conf
 /etc/init.d/dnsmasq restart
 ```
 
+##Configuration
+
+Configuration settings are read from a file named `config.txt` in the same directory as the scripts. The settings that can be specified are grouped by the script that uses them below. All settings must follow the syntax `key=value` with or without spaces around the `=` and without quotes around the `value`.
+
+###get-blacklist.sh
+
+* `blacklist_dest`: The destination to upload the blacklist, formatted as user@host:file. If set, dnsmasq will be restarted automatically after the file is uploaded.
+
+###get-filter.sh
+
+* `filter_dest`: The destination to upload the filter, formatted as user@host:file.
+
+###update-dns.sh
+
+* `ddns_user`: The username for DNS-O-Matic. This setting is required.
+* `ddns_pass`: The password for DNS-O-Matic. This setting is required.
+* `remote_ip`: The URL from which to obtain your public IP address. If unset, it will default to https://myip.dnsomatic.com.
+
 ##Customization
 
-Since the blacklist is downloaded from [SecureMecca.com](http://securemecca.com/), any changes made to it will be lost when the script is run again. Additional domains can be added to a file named `add-blacklist.txt`. This file should live in the same directory as the script and should be formatted as a hosts file:
+Since the blacklist is downloaded from [SecureMecca.com](http://securemecca.com/), any changes made to it will be lost when the script is run again. Additional domains can be added to a file named `add-blacklist.txt`. This file should live in the same directory as the script and should be formatted as follows:
 
 ```text
 127.0.0.1    4chan.org
@@ -169,8 +167,7 @@ Since the blacklist is downloaded from [SecureMecca.com](http://securemecca.com/
 Likewise, additional filtering rules can be added to a file named `add-filter.txt`. It should look like this:
 
 ```text
-BadURL_Parts[i++] = "foobar"
-BadHostParts[i++] = "[^e]adult";
+GoodDomains[i++] = "github.com"
 ```
 
 See [here](http://securemecca.com/Downloads/proxy_en.txt) for the complete list and description of each section.
@@ -182,8 +179,4 @@ This is not a 100% effective solution for securing your network from ads, malwar
 ##Credit
 
 Much love goes to the OpenWRT community, particularly those who contributed to [this thread](https://forum.openwrt.org/viewtopic.php?id=35023), to the folks at [Unix & Linux SE](https://unix.stackexchange.com/), and to the [SecureMecca.com](http://securemecca.com/) team.
-
-##To-do
-
-* Automate restart dnsmasq after uploading blacklist
 
