@@ -17,9 +17,12 @@ fi
 
 while IFS='= ' read key value; do
     case "$key" in
-        remote_ip|ddns_user|ddns_pass)
-            declare "$key"="$value"
-            ;;
+        update_ddns_user)
+            ddns_user="$value" ;;
+        update_ddns_pass)
+            ddns_pass="$value" ;;
+        update_remote_ip)
+            remote_ip="$value" ;;
     esac
 done < "$config"
 
@@ -28,7 +31,7 @@ if [ -z "$remote_ip" ]; then
 fi
 
 if [ -z "$ddns_user" -o -z "$ddns_pass" ]; then
-    echo "Config file is missing username and/or password for DDNS service"
+    echo "Config file is missing username and/or password for DDNS service" | tee -a "$log"
     exit 4
 fi
 

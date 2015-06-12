@@ -109,8 +109,8 @@ grep -q "$cron1" /etc/crontab || echo "$cron1" >> /etc/crontab
 Create a file named `config.txt` in the same directory as the script. This file must contain your username and password for DNS-O-Matic and must be formatted as follows:
 
 ```text
-ddns_user=username
-ddns_pass=password
+update_ddns_user=username
+update_ddns_pass=password
 ```
 
 ###Step 5: Add OpenDNS to dnsmasq config
@@ -144,33 +144,27 @@ Configuration settings are read from a file named `config.txt` in the same direc
 
 ###get-blacklist.sh
 
-* `blacklist_dest`: The destination to upload the blacklist, formatted as user@host:file. If set, dnsmasq will be restarted automatically after the file is uploaded.
+* `blacklist_add_host`: Specify an additional domain to block. Can occur more than once.
+* `blacklist_remove_host`: Unblock a domain. Can occur more than once.
+* `blacklist_upload_dest`: The destination to upload the blacklist, formatted as user@host:file. If set, dnsmasq will be restarted automatically after the file is uploaded.
 
 ###get-filter.sh
 
-* `filter_dest`: The destination to upload the filter, formatted as user@host:file.
+* `filter_add_good_domain`: Specify an additional good domain. Can occur more than once.
+* `filter_remove_good_domain`: Remove a good domain. Can occur more than once.
+* `filter_add_bad_domain`: Specify an additional bad domain. Can occur more than once.
+* `filter_remove_bad_domain`: Remove a bad domain. Can occur more than once.
+* `filter_add_bad_url_part`: Specify an additional bad URL part. Can occur more than once.
+* `filter_remove_bad_url_part`: Remove a bad URL part. Can occur more than once.
+* `filter_add_bad_host_part`: Specify an additional bad host part. Can occur more than once.
+* `filter_remove_bad_host_part`: Remove a bad host part. Can occur more than once.
+* `filter_upload_dest`: The destination to upload the filter, formatted as user@host:file.
 
 ###update-dns.sh
 
-* `ddns_user`: The username for DNS-O-Matic. This setting is required.
-* `ddns_pass`: The password for DNS-O-Matic. This setting is required.
-* `remote_ip`: The URL from which to obtain your public IP address. If unset, it will default to https://myip.dnsomatic.com.
-
-##Customization
-
-Since the blacklist is downloaded from [SecureMecca.com](http://securemecca.com/), any changes made to it will be lost when the script is run again. Additional domains can be added to a file named `add-blacklist.txt`. This file should live in the same directory as the script and should be formatted as follows:
-
-```text
-127.0.0.1    4chan.org
-```
-
-Likewise, additional filtering rules can be added to a file named `add-filter.txt`. It should look like this:
-
-```text
-GoodDomains[i++] = "github.com"
-```
-
-See [here](http://securemecca.com/Downloads/proxy_en.txt) for the complete list and description of each section.
+* `update_ddns_user`: The username for DNS-O-Matic. This setting is required.
+* `update_ddns_pass`: The password for DNS-O-Matic. This setting is required.
+* `update_remote_ip`: The URL from which to obtain your public IP address. If unset, it will default to https://myip.dnsomatic.com.
 
 ##Disclaimer
 

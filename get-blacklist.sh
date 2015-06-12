@@ -8,18 +8,23 @@ remote_date="http://securemecca.com/Downloads/hdate.txt"
 local_hosts="hosts.txt"
 remote_hosts="http://securemecca.com/Downloads/hosts.txt"
 blacklist="blacklist.hosts"
-add_blacklist="add-blacklist.txt"
 
 cd "${BASH_SOURCE%/*}" || exit
 
 echo -e "\nLog started $(date)" >> "$log"
 
+add_hosts=()
+remove_hosts=()
+
 if [ -f "$config" ]; then
     while IFS='= ' read key value; do
         case "$key" in
-            blacklist_dest)
-                declare "$key"="$value"
-                ;;
+            blacklist_add_host)
+                add_hosts=("${add_hosts[@]}" "$value") ;;
+            blacklist_remove_host)
+                remove_hosts=("${remove_hosts[@]}" "$value") ;;
+            blacklist_upload_dest)
+                upload_dest="$value" ;;
         esac
     done < "$config"
 fi
@@ -63,20 +68,27 @@ fi
 
 echo "Building $blacklist..." | tee -a "$log"
 
-sed 's/$//' "$cache_dir/$local_hosts" > "$blacklist"
-cat "$add_blacklist" >> "$blacklist"
+sed "s/$//" "$cache_dir/$local_hosts" > "$blacklist"
+
+for add_host in "${add_hosts[@]}"; do
+    echo "127.0.0.1	$add_host" >> "$blacklist"
+done
+
+for remove_host in "${remove_hosts[@]}"; do
+    sed -i "s/^127.0.0.1	$remove_host/#127.0.0.1	$remove_host/" "$blacklist"
+done
 
 echo "Done" | tee -a "$log"
 
-if [ -n "$blacklist_dest" ]; then
-    if ! echo "$blacklist_dest" | grep -Eq ".+@.+:.+"; then
+if [ -n "$upload_dest" ]; then
+    if ! echo "$upload_dest" | grep -Eq ".+@.+:.+"; then
         echo "Upload destination is not valid" | tee -a "$log"
         exit 3
     fi
 
-    echo "Uploading to $blacklist_dest..." | tee -a "$log"
+    echo "Uploading to $upload_dest..." | tee -a "$log"
 
-    cat "$blacklist" | ssh "${blacklist_dest%:*}" "cat > ${blacklist_dest#*:}; /etc/init.d/dnsmasq restart"
+    cat "$blacklist" | ssh "${upload_dest%:*}" "cat > ${upload_dest#*:}; /etc/init.d/dnsmasq restart"
 
     echo "Done" | tee -a "$log"
 fi
