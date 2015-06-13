@@ -116,6 +116,8 @@ for remove_bad_host_part in "${remove_bad_host_parts[@]}"; do
     sed -i "s/^BadHostParts\[i++\] = \"${remove_bad_host_part/[/\\[}\";/\/\/ BadHostParts[i++] = \"$remove_bad_host_part\";/" "$filter"
 done
 
+sed -i "s/var debug = debugNormal;/var debug = false/" "$filter"
+
 echo "Done" | tee -a "$log"
 
 if [ -n "$upload_dest" ]; then
