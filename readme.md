@@ -80,7 +80,7 @@ You can configure [OpenDNS](https://www.opendns.com/) to block everything from a
 
 ###Step 2: Register on DNS-O-Matic
 
-[DNS-O-Matic](https://www.dnsomatic.com/) provides an API to notify OpenDNS your public IP address changes, which it needs to apply your filtering preferences. Add OpenDNS as a service to DNS-O-Matic.
+[DNS-O-Matic](https://www.dnsomatic.com/) provides an API to notify OpenDNS when your public IP address changes, which it needs to apply your filtering preferences. Add OpenDNS as a service to DNS-O-Matic.
 
 ###Step 3: Add startup script
 
@@ -168,9 +168,8 @@ Configuration settings are read from a file named `config.txt` in the same direc
 
 ##Disclaimer
 
-This is not a 100% effective solution for securing your network from ads, malware, porn, trackers, etc. If you want that, you really need a [whitelist](https://github.com/Pajamaman/dnsmasq).
+This is not a 100% effective solution for securing your network from ads, malware, porn, trackers, etc. If you want that, you really need a [whitelist](https://github.com/Pajamaman/whitelist).
 
 ##Credit
 
 Much love goes to the OpenWRT community, particularly those who contributed to [this thread](https://forum.openwrt.org/viewtopic.php?id=35023), to the folks at [Unix & Linux SE](https://unix.stackexchange.com/), and to the [SecureMecca.com](http://securemecca.com/) team.
-
