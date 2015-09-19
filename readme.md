@@ -1,4 +1,4 @@
-A three part solution for network security that's good enough for me.
+A two part solution to network security that's good enough for me.
 
 ##Part 1: Blacklist
 
@@ -45,38 +45,11 @@ scp blacklist.hosts root@192.168.1.1:/etc/blacklist.hosts
 /etc/init.d/firewall restart; /etc/init.d/dnsmasq restart
 ```
 
-##Part 2: Filter
-
-###Step 1: Download filter
-
-If you have a web server, copy this file to the web root or something.
-
-```bash
-./get-filter.sh
-cp filter.pac /www/filter.pac
-```
-
-Or do this on a separate host and upload the file to the server.
-
-```bash
-scp filter.pac root@192.168.1.1:/www/filter.pac
-```
-
-If you don't have a web server, you can copy this file to a file share or to each host in the network. My firewall/DNS server is also a web server, so I put it there.
-
-###Step 2: Configure clients
-
-Each host in the network will need to be configured to use the PAC file. This step varies for each browser/OS, but most browsers use the system-wide proxy settings.
-
-To set up a system-wide proxy in Ubuntu, go to System Settings > Network > Network proxy. Change the method to automatic, and enter the path to the PAC file for the configuration URL. This at least works for Chromium and Firefox.
-
-See [here](http://www.ericphelps.com/security/pac.htm) for information on setting up a system-wide proxy in Windows.
-
-##Part 3: Failsafe
+##Part 2: Failsafe
 
 ###Step 1: Register on OpenDNS
 
-You can configure [OpenDNS](https://www.opendns.com/) to block everything from alcohol to email, weapons and even religion. I prefer to leave it purely as a safety net, blocking only malware and porn, in case something slips through the blacklist and the proxy.
+You can configure [OpenDNS](https://www.opendns.com/) to block just about anything. I prefer to leave it purely as a safety net, blocking only what slips through the blacklist.
 
 ###Step 2: Register on DNS-O-Matic
 
@@ -148,18 +121,6 @@ Configuration settings are read from a file named `config.txt` in the same direc
 * `blacklist_remove_host`: Unblock a domain. Can occur more than once.
 * `blacklist_upload_dest`: The destination to upload the blacklist, formatted as user@host:file. If set, dnsmasq will be restarted automatically after the file is uploaded.
 
-###get-filter.sh
-
-* `filter_add_good_domain`: Specify an additional good domain. Can occur more than once.
-* `filter_remove_good_domain`: Remove a good domain. Can occur more than once.
-* `filter_add_bad_domain`: Specify an additional bad domain. Can occur more than once.
-* `filter_remove_bad_domain`: Remove a bad domain. Can occur more than once.
-* `filter_add_bad_url_part`: Specify an additional bad URL part. Can occur more than once.
-* `filter_remove_bad_url_part`: Remove a bad URL part. Can occur more than once.
-* `filter_add_bad_host_part`: Specify an additional bad host part. Can occur more than once.
-* `filter_remove_bad_host_part`: Remove a bad host part. Can occur more than once.
-* `filter_upload_dest`: The destination to upload the filter, formatted as user@host:file.
-
 ###update-dns.sh
 
 * `update_ddns_user`: The username for DNS-O-Matic. This setting is required.
@@ -172,4 +133,5 @@ This is not a 100% effective solution for securing your network from ads, malwar
 
 ##Credit
 
-Much love goes to the OpenWRT community, particularly those who contributed to [this thread](https://forum.openwrt.org/viewtopic.php?id=35023), to the folks at [Unix & Linux SE](https://unix.stackexchange.com/), and to the [SecureMecca.com](http://securemecca.com/) team.
+Much love goes to the OpenWRT community, particularly those who contributed to [this thread](https://forum.openwrt.org/viewtopic.php?id=35023), to the folks at [Unix & Linux SE](https://unix.stackexchange.com/), [SecureMecca.com](http://securemecca.com/) and [MVPS.org](http://winhelp2002.mvps.org/).
+

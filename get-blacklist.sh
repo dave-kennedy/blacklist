@@ -3,10 +3,8 @@
 log="log.txt"
 config="config.txt"
 cache_dir="cache"
-local_date="hdate.txt"
-remote_date="http://securemecca.com/Downloads/hdate.txt"
 local_hosts="hosts.txt"
-remote_hosts="http://securemecca.com/Downloads/hosts.txt"
+remote_hosts="http://winhelp2002.mvps.org/hosts.txt"
 blacklist="blacklist.hosts"
 
 cd "${BASH_SOURCE%/*}" || exit
@@ -33,49 +31,25 @@ if [ ! -d "$cache_dir" ]; then
     mkdir "$cache_dir"
 fi
 
-echo "Downloading $remote_date..." | tee -a "$log"
+echo "Downloading $remote_hosts..." | tee -a "$log"
 
-if ! wget -qO "$local_date" "$remote_date"; then
+if ! curl -o "$cache_dir/$local_hosts" -s -z "$cache_dir/$local_hosts" "$remote_hosts"; then
     echo "Error: $?" | tee -a "$log"
     exit 1
 fi
 
 echo "Done" | tee -a "$log"
 
-if [ ! -f "$cache_dir/$local_hosts" ]; then
-    echo "First run" | tee -a "$log"
-    download=true
-elif [ "$cache_dir/$local_date" -ot "$local_date" ]; then
-    echo "Hosts file is out of date" | tee -a "$log"
-    download=true
-else
-    echo "Hosts file is up to date" | tee -a "$log"
-    download=false
-fi
-
-mv "$local_date" "$cache_dir"
-
-if [ "$download" = true ]; then
-    echo "Downloading $remote_hosts..." | tee -a "$log"
-
-    if ! wget -qO "$cache_dir/$local_hosts" "$remote_hosts"; then
-        echo "Error: $?" | tee -a "$log"
-        exit 2
-    fi
-
-    echo "Done" | tee -a "$log"
-fi
-
 echo "Building $blacklist..." | tee -a "$log"
 
 sed "s/$//" "$cache_dir/$local_hosts" > "$blacklist"
 
 for add_host in "${add_hosts[@]}"; do
-    echo "127.0.0.1	$add_host" >> "$blacklist"
+    echo "0.0.0.0 $add_host" >> "$blacklist"
 done
 
 for remove_host in "${remove_hosts[@]}"; do
-    sed -i "s/^127.0.0.1	$remove_host/#127.0.0.1	$remove_host/" "$blacklist"
+    sed -i "s/^0.0.0.0 $remove_host/#0.0.0.0 $remove_host/" "$blacklist"
 done
 
 echo "Done" | tee -a "$log"
