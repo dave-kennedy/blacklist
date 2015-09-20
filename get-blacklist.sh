@@ -57,7 +57,7 @@ echo "Done" | tee -a "$log"
 if [ -n "$upload_dest" ]; then
     if ! echo "$upload_dest" | grep -Eq ".+@.+:.+"; then
         echo "Upload destination is not valid" | tee -a "$log"
-        exit 3
+        exit 2
     fi
 
     echo "Uploading to $upload_dest..." | tee -a "$log"
