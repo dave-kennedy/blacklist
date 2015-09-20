@@ -29,14 +29,9 @@ grep -q "$dns1" /etc/dnsmasq.conf || echo "$dns1" >> /etc/dnsmasq.conf
 ###Step 3: Download blacklist
 
 ```bash
-./get-blacklist.sh
+/path/to/get-blacklist.sh
+
 cp blacklist.hosts /etc/blacklist.hosts
-```
-
-Or do this on a separate host and upload the file to the server.
-
-```bash
-scp blacklist.hosts root@192.168.1.1:/etc/blacklist.hosts
 ```
 
 ###Step 4: Restart firewall and dnsmasq
@@ -79,7 +74,7 @@ grep -q "$cron1" /etc/crontab || echo "$cron1" >> /etc/crontab
 
 ###Step 4: Create config file
 
-Create a file named `config.txt` in the same directory as the script. This file must contain your username and password for DNS-O-Matic and must be formatted as follows:
+Create a file named `config.txt` in the same directory as `update-dns.sh`. This file must contain your username and password for DNS-O-Matic and must be formatted as follows:
 
 ```text
 update_ddns_user=username
@@ -88,7 +83,7 @@ update_ddns_pass=password
 
 ###Step 5: Add OpenDNS to dnsmasq config
 
-Do this step on your DNS server.
+Do this and the next step on your firewall/DNS server.
 
 ```bash
 #we already made a backup
@@ -113,13 +108,13 @@ grep -q "$dns4" /etc/dnsmasq.conf || echo "$dns4" >> /etc/dnsmasq.conf
 
 ##Configuration
 
-Configuration settings are read from a file named `config.txt` in the same directory as the scripts. The settings that can be specified are grouped by the script that uses them below. All settings must follow the syntax `key=value` with or without spaces around the `=` and without quotes around the `value`.
+Configuration settings are read from a file named `config.txt`. Is must live in the same directory as the script that uses it. All settings must follow the syntax `key=value` with or without spaces around the `=` and without quotes around the `value`.
 
 ###get-blacklist.sh
 
 * `blacklist_add_host`: Specify an additional domain to block. Can occur more than once.
 * `blacklist_remove_host`: Unblock a domain. Can occur more than once.
-* `blacklist_upload_dest`: The destination to upload the blacklist, formatted as user@host:file. If set, dnsmasq will be restarted automatically after the file is uploaded.
+* `blacklist_upload_dest`: The destination to upload the blacklist, formatted as user@host:file. This is useful in case you want to run `get-blacklist.sh` from any host other than your firewall/DNS server. If set, dnsmasq will be restarted automatically after the file is uploaded.
 
 ###update-dns.sh
 
@@ -133,5 +128,5 @@ This is not a 100% effective solution for securing your network from ads, malwar
 
 ##Credit
 
-Much love goes to the OpenWRT community, particularly those who contributed to [this thread](https://forum.openwrt.org/viewtopic.php?id=35023), to the folks at [Unix & Linux SE](https://unix.stackexchange.com/), [SecureMecca.com](http://securemecca.com/) and [MVPS.org](http://winhelp2002.mvps.org/).
+Much love goes to the OpenWRT community, particularly those who contributed to [this thread](https://forum.openwrt.org/viewtopic.php?id=35023), and to the folks at [Unix & Linux SE](https://unix.stackexchange.com/), [SecureMecca.com](http://securemecca.com/) and [MVPS.org](http://winhelp2002.mvps.org/).
 
