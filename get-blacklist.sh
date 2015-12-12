@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 
 log="log.txt"
 config="config.txt"
@@ -42,7 +42,8 @@ echo "Done" | tee -a "$log"
 
 echo "Building $blacklist..." | tee -a "$log"
 
-sed "s/$//" "$cache_dir/$local_hosts" > "$blacklist"
+sed "s/
+$//" "$cache_dir/$local_hosts" > "$blacklist"
 
 for add_host in "${add_hosts[@]}"; do
     echo "0.0.0.0 $add_host" >> "$blacklist"
