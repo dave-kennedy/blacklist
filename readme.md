@@ -124,7 +124,7 @@ Configuration settings are read from a file named `config.txt`. Is must live in 
 
 ##Disclaimer
 
-This is not a 100% effective solution for securing your network from ads, malware, porn, trackers, etc. If you want that, you really need a [whitelist](https://github.com/Pajamaman/whitelist).
+This is not a 100% effective solution for securing your network from ads, malware, porn, trackers, etc. If you want that, you really need a [whitelist](https://github.com/dave-kennedy/whitelist).
 
 ##Credit
 
