@@ -21,13 +21,13 @@ while IFS='= ' read key value; do
             ddns_user="$value" ;;
         update_ddns_pass)
             ddns_pass="$value" ;;
-        update_remote_ip)
-            remote_ip="$value" ;;
+        update_ddns_ip_src)
+            ip_src="$value" ;;
     esac
 done < "$config"
 
-if [ -z "$remote_ip" ]; then
-    remote_ip="https://myip.dnsomatic.com"
+if [ -z "$ip_src" ]; then
+    ip_src="https://myip.dnsomatic.com"
 fi
 
 if [ -z "$ddns_user" -o -z "$ddns_pass" ]; then
@@ -39,9 +39,9 @@ if [ ! -d "$cache_dir" ]; then
     mkdir "$cache_dir"
 fi
 
-echo "Downloading $remote_ip..." | tee -a "$log"
+echo "Downloading $ip_src..." | tee -a "$log"
 
-if ! wget -qO "$local_ip" "$remote_ip"; then
+if ! wget -qO "$local_ip" "$ip_src"; then
     echo "Error: $?" | tee -a "$log"
     exit 1
 fi

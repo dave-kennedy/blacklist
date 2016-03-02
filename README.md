@@ -122,7 +122,7 @@ around the `value`.
 
 * `update_ddns_user`: The username for DNS-O-Matic. This setting is required.
 * `update_ddns_pass`: The password for DNS-O-Matic. This setting is required.
-* `update_remote_ip`: The URL from which to obtain your public IP address. If
+* `update_ddns_ip_src`: The URL from which to obtain your public IP address. If
   unset, it will default to https://myip.dnsomatic.com.
 
 ##Disclaimer
