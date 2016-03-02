@@ -57,7 +57,7 @@ This can go anywhere, but preferably on a host that is rebooted regularly.
 
 ```sh
 # cp /etc/rc.local /etc/rc.local.orig
-# rc1="/path/to/update-dns.sh &"
+# rc1="/path/to/update-ddns.sh &"
 # grep -q "$rc1" /etc/rc.local || echo "$rc1" >> /etc/rc.local
 ```
 
@@ -65,13 +65,13 @@ Or set up a cron job.
 
 ```sh
 # cp /etc/crontab /etc/crontab.orig
-# cron1="0 * * * * root /path/to/update-dns.sh"
+# cron1="0 * * * * root /path/to/update-ddns.sh"
 # grep -q "$cron1" /etc/crontab || echo "$cron1" >> /etc/crontab
 ```
 
 ###Step 4: Create config file
 
-Create a file named `config.txt` in the same directory as `update-dns.sh`. This
+Create a file named `config.txt` in the same directory as `update-ddns.sh`. This
 file must contain your username and password for DNS-O-Matic and must be
 formatted as follows:
 
@@ -118,7 +118,7 @@ around the `value`.
   any host other than your firewall/DNS server. If set, dnsmasq will be
   restarted automatically after the file is uploaded.
 
-###update-dns.sh
+###update-ddns.sh
 
 * `update_ddns_user`: The username for DNS-O-Matic. This setting is required.
 * `update_ddns_pass`: The password for DNS-O-Matic. This setting is required.
