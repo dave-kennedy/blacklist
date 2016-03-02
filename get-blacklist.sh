@@ -34,7 +34,7 @@ fi
 echo "Downloading $remote_hosts..." | tee -a "$log"
 
 if ! curl -sSo "$cache_dir/$local_hosts" -z "$cache_dir/$local_hosts" "$remote_hosts"; then
-    echo "Error: $?" | tee -a "$log"
+    echo "Error: could not download $remote_hosts" | tee -a "$log"
     exit 1
 fi
 
@@ -56,8 +56,8 @@ echo "Done" | tee -a "$log"
 
 if [ -n "$upload_dest" ]; then
     if ! echo "$upload_dest" | grep -Eq ".+@.+:.+"; then
-        echo "Upload destination is not valid" | tee -a "$log"
-        exit 2
+        echo "Error: upload destination is not valid" | tee -a "$log"
+        exit 1
     fi
 
     echo "Uploading to $upload_dest..." | tee -a "$log"

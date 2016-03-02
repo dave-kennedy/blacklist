@@ -11,8 +11,8 @@ cd "$(dirname "$0")" || exit 1
 printf "\nLog started $(date)\n" >> "$log"
 
 if [ ! -f "$config" ]; then
-    echo "Missing config file" | tee -a "$log"
-    exit 3
+    echo "Error: missing config file" | tee -a "$log"
+    exit 1
 fi
 
 while IFS="= " read key value; do
@@ -31,8 +31,8 @@ if [ -z "$ip_src" ]; then
 fi
 
 if [ -z "$ddns_user" -o -z "$ddns_pass" ]; then
-    echo "Config file is missing username and/or password for DDNS service" | tee -a "$log"
-    exit 4
+    echo "Error: missing username and/or password for DDNS service" | tee -a "$log"
+    exit 1
 fi
 
 if [ ! -d "$cache_dir" ]; then
@@ -42,7 +42,7 @@ fi
 echo "Downloading $ip_src..." | tee -a "$log"
 
 if ! curl -sSo "$local_ip" "$ip_src"; then
-    echo "Error: $?" | tee -a "$log"
+    echo "Error: could not download $ip_src" | tee -a "$log"
     exit 1
 fi
 
@@ -67,8 +67,8 @@ if [ "$update" = true ]; then
     echo "Sending update to $ddns_service..." | tee -a "$log"
 
     if ! curl -sSu "$ddns_user:$ddns_pass" "$ddns_service"; then
-        echo "Error: $?" | tee -a "$log"
-        exit 2
+        echo "Error: could not send update to $ddns_service" | tee -a "$log"
+        exit 1
     fi
 
     echo "Done" | tee -a "$log"
