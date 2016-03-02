@@ -6,7 +6,7 @@ Do each of these steps on your firewall/DNS server.
 
 ###Step 1: Add firewall rules
 
-```sh
+```
 # cp /etc/firewall.user /etc/firewall.user.orig
 # fw1="iptables -t nat -I PREROUTING -p tcp --dport 53 -j REDIRECT \
 > --to-ports 53"
@@ -18,7 +18,7 @@ Do each of these steps on your firewall/DNS server.
 
 ###Step 2: Add blacklist to dnsmasq config
 
-```sh
+```
 # cp /etc/dnsmasq.conf /etc/dnsmasq.conf.orig
 # dns1="addn-hosts=/etc/blacklist.hosts"
 # grep -q "$dns1" /etc/dnsmasq.conf || echo "$dns1" >> /etc/dnsmasq.conf
@@ -26,14 +26,14 @@ Do each of these steps on your firewall/DNS server.
 
 ###Step 3: Download blacklist
 
-```sh
+```
 # /path/to/get-blacklist.sh
 # cp blacklist.hosts /etc/blacklist.hosts
 ```
 
 ###Step 4: Restart firewall and dnsmasq
 
-```sh
+```
 # /etc/init.d/firewall restart; /etc/init.d/dnsmasq restart
 ```
 
@@ -55,7 +55,7 @@ preferences. Add OpenDNS as a service to DNS-O-Matic.
 
 This can go anywhere, but preferably on a host that is rebooted regularly.
 
-```sh
+```
 # cp /etc/rc.local /etc/rc.local.orig
 # rc1="/path/to/update-ddns.sh &"
 # grep -q "$rc1" /etc/rc.local || echo "$rc1" >> /etc/rc.local
@@ -63,7 +63,7 @@ This can go anywhere, but preferably on a host that is rebooted regularly.
 
 Or set up a cron job.
 
-```sh
+```
 # cp /etc/crontab /etc/crontab.orig
 # cron1="0 * * * * root /path/to/update-ddns.sh"
 # grep -q "$cron1" /etc/crontab || echo "$cron1" >> /etc/crontab
@@ -84,7 +84,7 @@ update_ddns_pass=password
 
 Do this and the next step on your firewall/DNS server.
 
-```sh
+```
 # dns1="all-servers"
 # dns2="no-resolv"
 # dns3="server=208.67.222.222"
@@ -97,7 +97,7 @@ Do this and the next step on your firewall/DNS server.
 
 ###Step 6: Restart dnsmasq
 
-```sh
+```
 # /etc/init.d/dnsmasq restart
 ```
 
