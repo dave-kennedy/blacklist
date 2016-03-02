@@ -33,7 +33,7 @@ fi
 
 echo "Downloading $remote_hosts..." | tee -a "$log"
 
-if ! curl -o "$cache_dir/$local_hosts" -s -z "$cache_dir/$local_hosts" "$remote_hosts"; then
+if ! curl -sSo "$cache_dir/$local_hosts" -z "$cache_dir/$local_hosts" "$remote_hosts"; then
     echo "Error: $?" | tee -a "$log"
     exit 1
 fi

@@ -41,7 +41,7 @@ fi
 
 echo "Downloading $ip_src..." | tee -a "$log"
 
-if ! wget -qO "$local_ip" "$ip_src"; then
+if ! curl -sSo "$local_ip" "$ip_src"; then
     echo "Error: $?" | tee -a "$log"
     exit 1
 fi
@@ -51,7 +51,7 @@ echo "Done" | tee -a "$log"
 if [ ! -f "$cache_dir/$local_ip" ]; then
     echo "First run" | tee -a "$log"
     update=true
-elif ! diff -q "$local_ip" "$cache_dir/$local_ip" > /dev/null; then
+elif [ "$(cat "$local_ip")" != "$(cat "$cache_dir/$local_ip")" ]; then
     echo "IP address is out of date" | tee -a "$log"
     update=true
 else
@@ -66,7 +66,7 @@ mv "$local_ip" "$cache_dir"
 if [ "$update" = true ]; then
     echo "Sending update to $ddns_service..." | tee -a "$log"
 
-    if ! wget -qO - --user="$ddns_user" --password="$ddns_pass" "$ddns_service" > /dev/null 2>&1; then
+    if ! curl -sSu "$ddns_user:$ddns_pass" "$ddns_service"; then
         echo "Error: $?" | tee -a "$log"
         exit 2
     fi
