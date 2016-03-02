@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 log="log.txt"
 config="config.txt"
@@ -6,23 +6,23 @@ cache_dir="cache"
 local_ip="ip.txt"
 ddns_service="https://updates.dnsomatic.com/nic/update?hostname=all.dnsomatic.com&myip="
 
-cd "${BASH_SOURCE%/*}" || exit
+cd "$(dirname "$0")" || exit 1
 
-echo -e "\nLog started $(date)" >> "$log"
+printf "\nLog started $(date)\n" >> "$log"
 
 if [ ! -f "$config" ]; then
     echo "Missing config file" | tee -a "$log"
     exit 3
 fi
 
-while IFS='= ' read key value; do
+while IFS="= " read key value; do
     case "$key" in
         update_ddns_user)
-            ddns_user="$value" ;;
+            ddns_user="$value";;
         update_ddns_pass)
-            ddns_pass="$value" ;;
+            ddns_pass="$value";;
         update_ddns_ip_src)
-            ip_src="$value" ;;
+            ip_src="$value";;
     esac
 done < "$config"
 
@@ -59,7 +59,7 @@ else
     update=false
 fi
 
-ddns_service+=$(cat "$local_ip")
+ddns_service="$ddns_service$(cat "$local_ip")"
 
 mv "$local_ip" "$cache_dir"
 

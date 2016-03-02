@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 log="log.txt"
 config="config.txt"
@@ -7,22 +7,22 @@ local_hosts="hosts.txt"
 remote_hosts="http://winhelp2002.mvps.org/hosts.txt"
 blacklist="blacklist.hosts"
 
-cd "${BASH_SOURCE%/*}" || exit
+cd "$(dirname "$0")" || exit 1
 
-echo -e "\nLog started $(date)" >> "$log"
+printf "\nLog started $(date)\n" >> "$log"
 
-add_hosts=()
-remove_hosts=()
+add_hosts=""
+remove_hosts=""
 
 if [ -f "$config" ]; then
-    while IFS='= ' read key value; do
+    while IFS="= " read key value; do
         case "$key" in
             blacklist_add_host)
-                add_hosts=("${add_hosts[@]}" "$value") ;;
+                add_hosts="$add_hosts $value";;
             blacklist_remove_host)
-                remove_hosts=("${remove_hosts[@]}" "$value") ;;
+                remove_hosts="$remove_hosts $value";;
             blacklist_upload_dest)
-                upload_dest="$value" ;;
+                upload_dest="$value";;
         esac
     done < "$config"
 fi
@@ -42,14 +42,13 @@ echo "Done" | tee -a "$log"
 
 echo "Building $blacklist..." | tee -a "$log"
 
-sed "s/
-$//" "$cache_dir/$local_hosts" > "$blacklist"
+sed "s/\r//" "$cache_dir/$local_hosts" > "$blacklist"
 
-for add_host in "${add_hosts[@]}"; do
+for add_host in $add_hosts; do
     echo "0.0.0.0 $add_host" >> "$blacklist"
 done
 
-for remove_host in "${remove_hosts[@]}"; do
+for remove_host in $remove_hosts; do
     sed -i "s/^0.0.0.0 $remove_host/#0.0.0.0 $remove_host/" "$blacklist"
 done
 
