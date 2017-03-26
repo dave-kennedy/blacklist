@@ -29,7 +29,7 @@ while IFS="= " read key value; do
 done < "$config"
 
 if [ -z "$ip_src" ]; then
-    ip_src="https://myip.dnsomatic.com"
+    ip_src="http://myip.dnsomatic.com"
 fi
 
 if [ -z "$ca_dir" ]; then
