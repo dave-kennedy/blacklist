@@ -4,37 +4,36 @@ A two part solution to network security that's good enough for me.
 
 Do each of these steps on your firewall/DNS server.
 
-### Step 1: Add firewall rules
+### Step 1: Configure firewall
+
+These firewall rules will prevent clients on the network from bypassing the
+DNS server:
 
 ```
-# cp /etc/firewall.user /etc/firewall.user.orig
-# fw1="iptables -t nat -I PREROUTING -p tcp --dport 53 -j REDIRECT \
-> --to-ports 53"
-# fw2="iptables -t nat -I PREROUTING -p udp --dport 53 -j REDIRECT \
-> --to-ports 53"
-# grep -q "$fw1" /etc/firewall.user || echo "$fw1" >> /etc/firewall.user
-# grep -q "$fw2" /etc/firewall.user || echo "$fw2" >> /etc/firewall.user
+iptables -t nat -I PREROUTING -p tcp --dport 53 -j REDIRECT --to-ports 53
+iptables -t nat -I PREROUTING -p udp --dport 53 -j REDIRECT --to-ports 53
 ```
 
-### Step 2: Add blacklist to dnsmasq config
+Restart the firewall.
+
+### Step 2: Configure dnsmasq
+
+Run `get-blacklist.sh` to download the blacklist, then add this to the dnsmasq
+configuration file (typically at `/etc/dnsmasq.conf`):
 
 ```
-# cp /etc/dnsmasq.conf /etc/dnsmasq.conf.orig
-# dns1="addn-hosts=/etc/blacklist.hosts"
-# grep -q "$dns1" /etc/dnsmasq.conf || echo "$dns1" >> /etc/dnsmasq.conf
+addn-hosts=/path/to/blacklist.hosts
 ```
 
-### Step 3: Download blacklist
+Restart dnsmasq.
+
+### Step 3 (optional): Configure crontab
+
+This cron job will run `get-blacklist.sh` once per month, but will only
+download a new blacklist if it has changed:
 
 ```
-# /path/to/get-blacklist.sh
-# cp blacklist.hosts /etc/blacklist.hosts
-```
-
-### Step 4: Restart firewall and dnsmasq
-
-```
-# /etc/init.d/firewall restart; /etc/init.d/dnsmasq restart
+0 0 1 * * /path/to/get-blacklist.sh
 ```
 
 ## Part 2: Failsafe
@@ -42,69 +41,53 @@ Do each of these steps on your firewall/DNS server.
 ### Step 1: Register on OpenDNS
 
 You can configure [OpenDNS](https://www.opendns.com/) to block just about
-anything. I prefer to leave it purely as a safety net, blocking only what slips
-through the blacklist.
+anything. I prefer to leave it purely as a safety net, blocking only what
+slips through the blacklist.
 
 ### Step 2: Register on DNS-O-Matic
 
-[DNS-O-Matic](https://www.dnsomatic.com/) provides an API to notify OpenDNS when
-your public IP address changes, which it needs to apply your filtering
+[DNS-O-Matic](https://www.dnsomatic.com/) provides an API to notify OpenDNS
+when your public IP address changes, which it needs to apply your filtering
 preferences. Add OpenDNS as a service to DNS-O-Matic.
 
-### Step 3: Add startup script
+### Step 3: Configure dnsmasq
 
-This can go anywhere, but preferably on a host that is rebooted regularly.
-
-```
-# cp /etc/rc.local /etc/rc.local.orig
-# rc1="/path/to/update-ddns.sh &"
-# grep -q "$rc1" /etc/rc.local || echo "$rc1" >> /etc/rc.local
-```
-
-Or set up a cron job.
+Add this to the dnsmasq configuration file (typically at `/etc/dnsmasq.conf`)
+to use the OpenDNS nameservers:
 
 ```
-# cp /etc/crontab /etc/crontab.orig
-# cron1="0 * * * * root /path/to/update-ddns.sh"
-# grep -q "$cron1" /etc/crontab || echo "$cron1" >> /etc/crontab
+all-servers
+no-resolv
+server=208.67.222.222
+server=208.67.220.220
 ```
+
+Restart dnsmasq.
 
 ### Step 4: Create config file
 
-Create a file named `config.txt` in the same directory as `update-ddns.sh`. This
-file must contain your username and password for DNS-O-Matic and must be
+Create a file named `config.txt` in the same directory as `update-ddns.sh`.
+This file must contain your username and password for DNS-O-Matic and must be
 formatted as follows:
 
 ```
-update_ddns_user=username
-update_ddns_pass=password
+ddns_user=username
+ddns_pass=password
 ```
 
-### Step 5: Add OpenDNS to dnsmasq config
+### Step 5: Configure crontab
 
-Do this and the next step on your firewall/DNS server.
-
-```
-# dns1="all-servers"
-# dns2="no-resolv"
-# dns3="server=208.67.222.222"
-# dns4="server=208.67.220.220"
-# grep -q "$dns1" /etc/dnsmasq.conf || echo "$dns1" >> /etc/dnsmasq.conf
-# grep -q "$dns2" /etc/dnsmasq.conf || echo "$dns2" >> /etc/dnsmasq.conf
-# grep -q "$dns3" /etc/dnsmasq.conf || echo "$dns3" >> /etc/dnsmasq.conf
-# grep -q "$dns4" /etc/dnsmasq.conf || echo "$dns4" >> /etc/dnsmasq.conf
-```
-
-### Step 6: Restart dnsmasq
+This cron job will run `update-ddns.sh` every ten minutes, but will only send
+an update to DNS-O-Matic if your public IP address has changed:
 
 ```
-# /etc/init.d/dnsmasq restart
+*/10 * * * * /path/to/update-ddns.sh
 ```
 
 ## Configuration
 
-Configuration settings are read from a file named `config.txt`. It must live in
-the same directory as the script that uses it. All settings must follow the
+Configuration settings are read from a file named `config.txt`. It must live
+in the same directory as the script that uses it. All settings must follow the
 syntax `key=value` with or without spaces around the `=` and without quotes
 around the `value`.
 
@@ -113,19 +96,19 @@ around the `value`.
 * `blacklist_add_host`: Specify an additional domain to block. Can occur more
   than once.
 * `blacklist_remove_host`: Unblock a domain. Can occur more than once.
-* `blacklist_upload_dest`: The destination to upload the blacklist, formatted as
-  user@host:file. This is useful in case you want to run `get-blacklist.sh` from
-  any host other than your firewall/DNS server. If set, dnsmasq will be
+* `blacklist_upload_dest`: The destination to upload the blacklist, formatted
+  as user@host:file. This is useful in case you want to run `get-blacklist.sh`
+  from any host other than your firewall/DNS server. If set, dnsmasq will be
   restarted automatically after the file is uploaded.
 
 ### update-ddns.sh
 
-* `update_ddns_user`: The username for DNS-O-Matic. This setting is required.
-* `update_ddns_pass`: The password for DNS-O-Matic. This setting is required.
-* `update_ddns_ip_src`: The URL from which to obtain your public IP address. If
+* `ddns_user`: The username for DNS-O-Matic. This setting is required.
+* `ddns_pass`: The password for DNS-O-Matic. This setting is required.
+* `ddns_ip_src`: The URL from which to obtain your public IP address.  If
   unset, it will default to http://myip.dnsomatic.com.
-* `update_ddns_ca_dir`: The SSL certificate directory. If unset, it will default
-  to /etc/ssl/certs.
+* `ddns_ca_dir`: The SSL certificate directory. If unset, it will default to
+  /etc/ssl/certs.
 
 ## Disclaimer
 

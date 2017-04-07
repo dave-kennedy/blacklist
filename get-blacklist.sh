@@ -1,6 +1,5 @@
 #!/bin/sh
 
-log="log.txt"
 config="config.txt"
 cache_dir="cache"
 local_hosts="hosts.txt"
@@ -9,7 +8,7 @@ blacklist="blacklist.hosts"
 
 cd "$(dirname "$0")" || exit 1
 
-printf "\nLog started $(date)\n" >> "$log"
+logger -s "Log started $(date)"
 
 add_hosts=""
 remove_hosts=""
@@ -31,16 +30,16 @@ if [ ! -d "$cache_dir" ]; then
     mkdir "$cache_dir"
 fi
 
-echo "Downloading $remote_hosts..." | tee -a "$log"
+logger -s "Downloading $remote_hosts..."
 
 if ! curl -sSo "$cache_dir/$local_hosts" -z "$cache_dir/$local_hosts" "$remote_hosts"; then
-    echo "Error: could not download $remote_hosts" | tee -a "$log"
+    logger -s "Error: could not download $remote_hosts"
     exit 1
 fi
 
-echo "Done" | tee -a "$log"
+logger -s "Done"
 
-echo "Building $blacklist..." | tee -a "$log"
+logger -s "Building $blacklist..."
 
 sed "s/\r//" "$cache_dir/$local_hosts" > "$blacklist"
 
@@ -52,18 +51,20 @@ for remove_host in $remove_hosts; do
     sed -i "s/^0.0.0.0 $remove_host/#0.0.0.0 $remove_host/" "$blacklist"
 done
 
-echo "Done" | tee -a "$log"
+logger -s "Done"
 
 if [ -n "$upload_dest" ]; then
     if ! echo "$upload_dest" | grep -Eq ".+@.+:.+"; then
-        echo "Error: upload destination is not valid" | tee -a "$log"
+        logger -s "Error: upload destination is not valid"
         exit 1
     fi
 
-    echo "Uploading to $upload_dest..." | tee -a "$log"
+    logger -s "Uploading to $upload_dest..."
 
     cat "$blacklist" | ssh "${upload_dest%:*}" "cat > ${upload_dest#*:}; /etc/init.d/dnsmasq restart"
 
-    echo "Done" | tee -a "$log"
+    logger -s "Done"
 fi
+
+logger -s "Log ended $(date)"
 
