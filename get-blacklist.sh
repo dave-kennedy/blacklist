@@ -8,8 +8,6 @@ blacklist="blacklist.hosts"
 
 cd "$(dirname "$0")" || exit 1
 
-logger -s "Log started $(date)"
-
 add_hosts=""
 remove_hosts=""
 
@@ -65,6 +63,4 @@ if [ -n "$upload_dest" ]; then
 
     logger -s "Done"
 fi
-
-logger -s "Log ended $(date)"
 

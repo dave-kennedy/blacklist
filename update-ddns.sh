@@ -7,8 +7,6 @@ ddns_service="https://updates.dnsomatic.com/nic/update?hostname=all.dnsomatic.co
 
 cd "$(dirname "$0")" || exit 1
 
-logger -s "Log started $(date)"
-
 if [ ! -f "$config" ]; then
     logger -s "Error: missing config file"
     exit 1
@@ -78,6 +76,4 @@ if [ "$update" = true ]; then
 
     logger -s "Done"
 fi
-
-logger -s "Log ended $(date)"
 
