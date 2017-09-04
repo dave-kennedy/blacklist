@@ -110,6 +110,22 @@ around the `value`.
 * `ddns_ca_dir`: The SSL certificate directory. If unset, it will default to
   /etc/ssl/certs.
 
+## Additional setup for OpenWrt
+
+In order for this script to run on OpenWrt, you must install ca-certificates
+and curl:
+
+```sh
+$ opkg install ca-certificates curl
+```
+
+In addition, you must enable cron:
+
+```sh
+$ /etc/init.d/cron start
+$ /etc/init.d/cron enable
+```
+
 ## Disclaimer
 
 This is not a 100% effective solution for securing your network from ads,
