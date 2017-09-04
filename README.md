@@ -126,6 +126,24 @@ $ /etc/init.d/cron start
 $ /etc/init.d/cron enable
 ```
 
+Optionally, you can get your public IP address without hitting an external
+URL. Create a shell script at `/www/cgi-bin/ip` with something like the
+following:
+
+```sh
+#!/bin/sh
+
+echo -e 'Content-Type: text/plain\n'
+
+ifconfig | awk '/inet addr/{print substr($2,6)}' | tail -n 1
+```
+
+Then add this to `config.txt`:
+
+```
+ddns_ip_src=http://127.0.0.1/cgi-bin/ip
+```
+
 ## Disclaimer
 
 This is not a 100% effective solution for securing your network from ads,
