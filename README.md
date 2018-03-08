@@ -126,9 +126,9 @@ $ /etc/init.d/cron start
 $ /etc/init.d/cron enable
 ```
 
-Optionally, you can get your public IP address without hitting an external
-URL. Create a shell script at `/www/cgi-bin/ip` with something like the
-following:
+If your LAN interface is in PPPoE mode, you can get your public IP address
+without hitting an external URL. Create a shell script at `/www/cgi-bin/ip`
+with something like the following:
 
 ```sh
 #!/bin/sh
