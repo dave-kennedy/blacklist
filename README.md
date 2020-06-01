@@ -126,16 +126,20 @@ $ /etc/init.d/cron start
 $ /etc/init.d/cron enable
 ```
 
-If your LAN interface is in PPPoE mode, you can get your public IP address
-without hitting an external URL. Create a shell script at `/www/cgi-bin/ip`
-with something like the following:
+You can get your public IP address without hitting an external URL. Create
+a shell script at `/www/cgi-bin/ip` with something like the following:
 
 ```sh
-#!/bin/sh
+#!/usr/bin/env sh
 
 echo -e 'Content-Type: text/plain\n'
+ip -4 addr show eth1 | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+' | head -1
+```
 
-ifconfig | awk '/inet addr/{print substr($2,6)}' | tail -n 1
+Make the script executable:
+
+```sh
+$ chmod +x /www/cgi-bin/ip
 ```
 
 Then add this to `config.txt`:
@@ -143,6 +147,24 @@ Then add this to `config.txt`:
 ```
 ddns_ip_src=http://127.0.0.1/cgi-bin/ip
 ```
+
+## Alternatives
+
+I didn't have this option when I wrote this guide, but these days it's probably
+more practical for most people to use the [AdGuard](https://adguard.com/)
+Family Protection nameservers. It's not as configurable as OpenDNS, but it only
+requires step 3 from part 2 above. Just replace the last two lines of the
+dnsmasq configuration file with AdGuard's nameservers:
+
+```
+all-servers
+no-resolv
+server=176.103.130.132
+server=176.103.130.134
+```
+
+Of course, many other alternatives exist as well, but I'll leave the research
+to you.
 
 ## Disclaimer
 
@@ -157,4 +179,3 @@ Much love goes to the OpenWRT community, particularly those who contributed to
 folks at [Unix & Linux SE](https://unix.stackexchange.com/),
 [SecureMecca.com](http://securemecca.com/) and
 [MVPS.org](http://winhelp2002.mvps.org/).
-
