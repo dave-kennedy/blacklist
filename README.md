@@ -1,4 +1,14 @@
-A two part solution to network security that's good enough for me.
+This is a fairly effective solution for securing your network from ads,
+malware, porn, trackers, etc. It will not secure your network absolutely. I
+used to advise people who wanted total control over their network to use a
+[whitelist](https://github.com/dave-kennedy/whitelist) instead, but with the
+advent of DNS over HTTPS (DoH) it became much more difficult. Basically, anyone
+who knows how to enable this feature in their browser can bypass the DNS
+servers advertised by DHCP. This is great for user privacy, but many parents
+will have mixed feelings.
+
+If anyone knows of a good way to restrict DoH to a specific DNS server, please
+[please get in touch](https://github.com/dave-kennedy/blacklist/issues).
 
 ## Part 1: Blacklist
 
@@ -165,12 +175,6 @@ server=176.103.130.134
 
 Of course, many other alternatives exist as well, but I'll leave the research
 to you.
-
-## Disclaimer
-
-This is not a 100% effective solution for securing your network from ads,
-malware, porn, trackers, etc. If you want that, you really need a
-[whitelist](https://github.com/dave-kennedy/whitelist).
 
 ## Credit
 
